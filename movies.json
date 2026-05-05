@@ -2,8 +2,8 @@
   {
     "id": 1,
     "title": "فيلم الرعب المظلم",
-    "file": "https://drive.google.com/file/d/1-KJRI-rYCW5xfGUVUJFEBtI9IS33JQ2w/view?usp=drive_link",
-    "poster": "movies/posters/horror.jpg",
+    "file": "https://drive.google.com/uc?export=download&id=1ABCD1234567890",
+    "poster": "https://drive.google.com/uc?export=download&id=1POSTER123456",
     "category": "رعب",
     "year": 2024,
     "duration": "1:52",
@@ -12,8 +12,8 @@
   {
     "id": 2,
     "title": "مغامرة الفضاء",
-    "file": "movies/space_adventure.mp4",
-    "poster": "movies/posters/space.jpg",
+    "file": "https://drive.google.com/file/d/1-KJRI-rYCW5xfGUVUJFEBtI9IS33JQ2w/view?usp=drive_link",
+    "poster": "",
     "category": "مغامرة",
     "year": 2023,
     "duration": "2:15",
