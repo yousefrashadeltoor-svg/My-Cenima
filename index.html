@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grok Live | إبداعك الحي</title>
+    <style>/* CSS المُقدّم من المستخدم */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* إضافة تحسينات أساسية لتجنب انهيار التخطيط */
+        body {
+            min-height: 100vh;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cinema</title>
+    <link rel="icon" href="Logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- شاشة التحميل -->
+    <div id="loader">
+        <div class="loader-content">
+            <img src="Logo.png" alt="My Cinema" class="loader-logo">
+            <div class="loader-bar"><div class="loader-fill"></div></div>
+            <p class="loader-text">جاري تحميل المنصة...</p>
+        </div>
+    </div>
+
+    <!-- الجزيئات المتحركة -->
+    <div id="particles"></div>
+
+    <!-- شريط التنقل -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand" onclick="App.navigate('home')">
+                <img src="Logo.png" alt="Logo" class="nav-logo">
+                <span class="nav-title">My Cinema</span>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="القائمة">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="navLinks">
+                <a onclick="App.navigate('home')" class="nav-link active" data-page="home">
+                    <i class="fas fa-home"></i> الرئيسية
+                </a>
+                <a onclick="App.navigate('about')" class="nav-link" data-page="about">
+                    <i class="fas fa-info-circle"></i> عن المنصة
+                </a>
+                <a onclick="App.navigate('contact')" class="nav-link" data-page="contact">
+                    <i class="fas fa-envelope"></i> اتصل بنا
+                </a>
+                <!-- روابط الزائر -->
+                <div id="guestLinks" class="nav-auth">
+                    <a onclick="App.navigate('login')" class="nav-btn btn-outline">تسجيل الدخول</a>
+                    <a onclick="App.navigate('register')" class="nav-btn btn-gold">إنشاء حساب</a>
+                </div>
+                <!-- روابط المستخدم -->
+                <div id="userLinks" class="nav-auth" style="display:none">
+                    <span class="nav-username" id="navUsername"></span>
+                    <a onclick="App.logout()" class="nav-btn btn-outline">تسجيل الخروج</a>
+                </div>
+                <!-- روابط المطور -->
+                <div id="devLinks" class="nav-auth" style="display:none">
+                    <span class="nav-username dev-badge" id="devUsername">
+                        <i class="fas fa-code"></i> <span></span>
+                    </span>
+                    <a onclick="App.navigate('dev')" class="nav-btn btn-gold">مركز المطور</a>
+                    <a onclick="App.logout()" class="nav-btn btn-outline">خروج</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- حاوية التطبيق -->
+    <main id="app">
+
+        <!-- ===== الصفحة الرئيسية ===== -->
+        <section id="page-home" class="page active">
+            <!-- بانر البطل -->
+            <div class="hero" id="heroSection">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title" id="heroTitle">مرحباً بك في My Cinema</h1>
+                    <p class="hero-desc" id="heroDesc">استمتع بمشاهدة أفضل الأفلام بجودة عالية ومجاناً</p>
+                    <div class="hero-actions" id="heroActions">
+                        <button class="btn btn-gold btn-lg" onclick="App.navigate('register')">
+                            <i class="fas fa-play"></i> ابدأ المشاهدة
+                        </button>
+                        <button class="btn btn-outline btn-lg" onclick="App.navigate('about')">
+                            <i class="fas fa-info-circle"></i> تعرف علينا
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شريط البحث والتصفية -->
+            <div class="filter-bar">
+                <div class="container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="ابحث عن فيلم..." oninput="App.filterMovies()">
+                    </div>
+                    <div class="category-filters" id="categoryFilters"></div>
+                </div>
+            </div>
+
+            <!-- شبكة الأفلام -->
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">جميع الأفلام</h2>
+                    <span class="section-count" id="moviesCount"></span>
+                </div>
+                <div class="movies-grid" id="moviesGrid">
+                    <div class="empty-state" id="emptyState" style="display:none">
+                        <i class="fas fa-film"></i>
+                        <h3>لا توجد أفلام حالياً</h3>
+                        <p>سيتم إضافة الأفلام قريباً</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== تسجيل الدخول ===== -->
+        <section id="page-login" class="page">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <img src="Logo.png" alt="Logo" class="auth-logo">
+                        <h2>تسجيل الدخول</h2>
+                        <p>أدخل بياناتك للوصول إلى حسابك</p>
+                    </div>
+                    <form id="loginForm" onsubmit="App.handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                            <input type="email" id="loginEmail" required placeholder="example@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock"></i> كلمة المرور</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="loginPassword" required placeholder="أدخل كلمة المرور">
+                                <button type="button" class="toggle-pass" onclick="App.togglePassword('loginPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gold btn-block">
+                            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <p>ليس لديك حساب؟ <a onclick="App.navigate('register')">إنشاء حساب جديد</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== إنشاء حساب ===== -->
+        <section id="page-register" class="page">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <img src="Logo.png" alt="Logo" class="auth-logo">
+                        <h2>إنشاء حساب جديد</h2>
+                        <p>انضم إلينا واستمتع بالمشاهدة</p>
+                    </div>
+                    <form id="registerForm" onsubmit="App.handleRegister(event)">
+                        <div class="form-group">
+                            <label for="regName"><i class="fas fa-user"></i> الاسم الكامل</label>
+                            <input type="text" id="regName" required placeholder="أدخل اسمك">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                            <input type="email" id="regEmail" required placeholder="example@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword"><i class="fas fa-lock"></i> كلمة المرور</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="regPassword" required minlength="6" placeholder="6 أحرف على الأقل">
+                                <button type="button" class="toggle-pass" onclick="App.togglePassword('regPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="regConfirm"><i class="fas fa-lock"></i> تأكيد كلمة المرور</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="regConfirm" required placeholder="أعد كتابة كلمة المرور">
+                                <button type="button" class="toggle-pass" onclick="App.togglePassword('regConfirm', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gold btn-block">
+                            <i class="fas fa-user-plus"></i> إنشاء الحساب
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <p>لديك حساب بالفعل؟ <a onclick="App.navigate('login')">تسجيل الدخول</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== مشغل الفيلم ===== -->
+        <section id="page-player" class="page">
+            <div class="player-container">
+                <button class="btn-back" onclick="App.navigate('home')">
+                    <i class="fas fa-arrow-right"></i> العودة للأفلام
+                </button>
+                <div class="player-wrapper">
+                    <video id="videoPlayer" controls controlslist="nodownload">
+                        <source id="videoSource" src="" type="video/mp4">
+                        متصفحك لا يدعم تشغيل الفيديو
+                    </video>
+                </div>
+                <div class="player-info">
+                    <h1 id="playerTitle"></h1>
+                    <div class="player-meta">
+                        <span id="playerYear"></span>
+                        <span id="playerDuration"></span>
+                        <span id="playerCategory"></span>
+                    </div>
+                    <p id="playerDesc"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== مركز المطور ===== -->
+        <section id="page-dev" class="page">
+            <div class="dev-container">
+                <div class="dev-header">
+                    <img src="Me.jpg" alt="Yousef M.Rashad" class="dev-avatar">
+                    <div>
+                        <h2>مركز المطور</h2>
+                        <p class="dev-role">مطور المنصة الأساسي</p>
+                    </div>
+                </div>
+
+                <!-- بطاقات الإحصائيات -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-film"></i></div>
+                        <div class="stat-value" id="statMovies">0</div>
+                        <div class="stat-label">عدد الأفلام</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-value" id="statUsers">0</div>
+                        <div class="stat-label">المستخدمين المسجلين</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                        <div class="stat-value" id="statVisits">0</div>
+                        <div class="stat-label">زيارات المنصة</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-tags"></i></div>
+                        <div class="stat-value" id="statCategories">0</div>
+                        <div class="stat-label">التصنيفات</div>
+                    </div>
+                </div>
+
+                <!-- معلومات النظام -->
+                <div class="dev-section">
+                    <h3><i class="fas fa-server"></i> معلومات النظام</h3>
+                    <div class="info-table">
+                        <div class="info-row"><span>اسم المنصة</span><span>My Cinema</span></div>
+                        <div class="info-row"><span>الإصدار</span><span>2.0.0</span></div>
+                        <div class="info-row"><span>المطور</span><span>Yousef M.Rashad</span></div>
+                        <div class="info-row"><span>الاستضافة</span><span>GitHub Pages</span></div>
+                        <div class="info-row"><span>مجلد الأفلام</span><span>/movies/</span></div>
+                        <div class="info-row"><span>ملف البيانات</span><span>/movies.json</span></div>
+                        <div class="info-row"><span>مخزن المستخدمين</span><span>localStorage</span></div>
+                        <div class="info-row"><span>آخر تحديث</span><span id="lastUpdate"></span></div>
+                    </div>
+                </div>
+
+                <!-- بيانات المطور -->
+                <div class="dev-section">
+                    <h3><i class="fas fa-user-shield"></i> بيانات حساب المطور</h3>
+                    <div class="info-table">
+                        <div class="info-row"><span>الاسم</span><span>Yousef M.Rashad</span></div>
+                        <div class="info-row"><span>البريد</span><span>yousef@mycinema.com</span></div>
+                        <div class="info-row"><span>كلمة المرور</span><span>yousef123</span></div>
+                        <div class="info-row"><span>الصورة</span><span>Me.jpg</span></div>
+                        <div class="info-row"><span>اللوجو</span><span>Logo.png</span></div>
+                    </div>
+                </div>
+
+                <!-- قائمة المستخدمين -->
+                <div class="dev-section">
+                    <h3><i class="fas fa-users-cog"></i> المستخدمون المسجلون</h3>
+                    <div class="users-table-wrapper">
+                        <table class="users-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>البريد</th>
+                                    <th>تاريخ التسجيل</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody"></tbody>
+                        </table>
+                        <div class="empty-state" id="noUsers" style="display:none">
+                            <i class="fas fa-user-slash"></i>
+                            <p>لا يوجد مستخدمون مسجلون بعد</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أداة تنظيف البيانات -->
+                <div class="dev-section">
+                    <h3><i class="fas fa-tools"></i> أدوات الصيانة</h3>
+                    <div class="dev-tools">
+                        <button class="btn btn-danger" onclick="App.clearAllUsers()">
+                            <i class="fas fa-trash-alt"></i> حذف جميع المستخدمين
+                        </button>
+                        <button class="btn btn-outline" onclick="App.resetVisits()">
+                            <i class="fas fa-redo"></i> إعادة تعيين الزيارات
+                        </button>
+                        <button class="btn btn-outline" onclick="App.exportData()">
+                            <i class="fas fa-download"></i> تصدير البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== سياسة الخصوصية ===== -->
+        <section id="page-privacy" class="page">
+            <div class="legal-container">
+                <h1>سياسة الخصوصية</h1>
+                <p class="legal-date">آخر تحديث: يناير 2025</p>
+                <div class="legal-content">
+                    <h2>1. مقدمة</h2>
+                    <p>مرحباً بكم في My Cinema. نحن نحترم خصوصيتكم ونلتزم بحماية بياناتكم الشخصية. توضح هذه السياسة كيفية جمع واستخدام وحماية معلوماتكم عند استخدام منصتنا.</p>
+                    
+                    <h2>2. المعلومات التي نجمعها</h2>
+                    <p>نجمع المعلومات التالية عند تسجيلكم في المنصة:</p>
+                    <ul>
+                        <li>الاسم الكامل الذي تدخلونه عند التسجيل</li>
+                        <li>عنوان البريد الإلكتروني</li>
+                        <li>كلمة المرور (تُخزّن مشفرة محلياً في المتصفح)</li>
+                        <li>بيانات التصفح الأساسية مثل عدد الزيارات</li>
+                    </ul>
+                    
+                    <h2>3. كيف نستخدم المعلومات</h2>
+                    <p>نستخدم معلوماتكم للأغراض التالية:</p>
+                    <ul>
+                        <li>توفير وتحسين خدمات المنصة</li>
+                        <li>تمكين تسجيل الدخول والوصول للمحتوى</li>
+                        <li>تحسين تجربة المستخدم بناءً على أنماط الاستخدام</li>
+                        <li>التواصل معكم بخصوص التحديثات الهامة</li>
+                    </ul>
+                    
+                    <h2>4. حماية البيانات</h2>
+                    <p>جميع بياناتكم تُخزّن محلياً في متصفحكم عبر localStorage ولا تُرسل إلى أي خادم خارجي. لا نشارك بياناتكم مع أطراف ثالثة بأي شكل من الأشكال.</p>
+                    
+                    <h2>5. ملفات تعريف الارتباط</h2>
+                    <p>نستخدم localStorage لتخزين تفضيلاتكم وبيانات الجلسة. يمكنكم مسح هذه البيانات في أي وقت من إعدادات المتصفح.</p>
+                    
+                    <h2>6. حقوقكم</h2>
+                    <p>يحق لكم طلب حذف بياناتكم الشخصية في أي وقت بالتواصل معنا عبر صفحة اتصل بنا.</p>
+                    
+                    <h2>7. التعديلات</h2>
+                    <p>نحتفظ بحق تعديل هذه السياسة في أي وقت. سيتم إشعاركم بأي تغييرات جوهرية.</p>
+                    
+                    <h2>8. التواصل</h2>
+                    <p>لأي استفسارات حول سياسة الخصوصية، يرجى التواصل مع المطور Yousef M.Rashad عبر صفحة اتصل بنا.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== شروط الاستخدام ===== -->
+        <section id="page-terms" class="page">
+            <div class="legal-container">
+                <h1>شروط الاستخدام</h1>
+                <p class="legal-date">آخر تحديث: يناير 2025</p>
+                <div class="legal-content">
+                    <h2>1. القبول</h2>
+                    <p>باستخدامكم منصة My Cinema، فإنكم توافقون على هذه الشروط بالكامل. إذا لم توافقوا على أي جزء، يرجى عدم استخدام المنصة.</p>
+                    
+                    <h2>2. استخدام المنصة</h2>
+                    <p>يجب عليكم استخدام المنصة بشكل قانوني وأخلاقي. يُحظر:</p>
+                    <ul>
+                        <li>محاولة الوصول غير المصرح به إلى أجزاء المنصة</li>
+                        <li>استخدام المنصة لأغراض غير مشروعة</li>
+                        <li>نسخ أو إعادة نشر المحتوى دون إذن</li>
+                        <li>محاولة التلاعب بنظام التسجيل أو البيانات</li>
+                        <li>إزالة أو تعديل أي إشعارات حقوق الملكية</li>
+                    </ul>
+                    
+                    <h2>3. الحسابات</h2>
+                    <p>أنتم مسؤولون عن الحفاظ على سرية بيانات حسابكم. يجب إبلاغنا فوراً في حال الاشتباه باستخدام غير مصرح به لحسابكم.</p>
+                    
+                    <h2>4. المحتوى</h2>
+                    <p>جميع الأفلام والمحتوى المتاح على المنصة مُقدّم كما هو دون أي ضمانات. نحن لا نتحمل مسؤولية جودة أو محتوى الأفلام المرفوعة.</p>
+                    
+                    <h2>5. حقوق الملكية الفكرية</h2>
+                    <p>منصة My Cinema وشعارها وتصميمها ملك للمطور Yousef M.Rashad. جميع الحقوق محفوظة.</p>
+                    
+                    <h2>6. الإنهاء</h2>
+                    <p>نحتفظ بحق تعليق أو إنهاء حساب أي مستخدم يخالف هذه الشروط دون إنذار مسبق.</p>
+                    
+                    <h2>7. القانون المعمول به</h2>
+                    <p>تخضع هذه الشروط لقوانين الجمهورية العربية المتحدة وتُفسّر وفقاً لها.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== إخلاء المسؤولية ===== -->
+        <section id="page-disclaimer" class="page">
+            <div class="legal-container">
+                <h1>إخلاء المسؤولية</h1>
+                <p class="legal-date">آخر تحديث: يناير 2025</p>
+                <div class="legal-content">
+                    <h2>1. إخلاء عام</h2>
+                    <p>تُقدّم منصة My Cinema "كما هي" و"حسب التوفر" دون أي ضمانات صريحة أو ضمنية. لا نضمن أن المنصة ستكون متاحة بشكل مستمر أو خالية من الأخطاء.</p>
+                    
+                    <h2>2. المحتوى</h2>
+                    <p>لا نتحمل مسؤولية دقة أو صلاحية أو قانونية المحتوى المُقدّم. الأفلام المتاحة تم رفعها لأغراض الترفيه فقط. المستخدم مسؤول عن التحقق من حقوق النشر قبل الاستخدام التجاري.</p>
+                    
+                    <h2>3. الروابط الخارجية</h2>
+                    <p>قد تحتوي المنصة على روابط لمواقع خارجية. لسنا مسؤولين عن محتوى أو سياسات الخصوصية لتلك المواقع.</p>
+                    
+                    <h2>4. الأضرار</h2>
+                    <p>في أي حال من الأحوال، لن يكون المطور Yousef M.Rashad مسؤولاً عن أي أضرار مباشرة أو غير مباشرة ناتجة عن استخدام أو عدم القدرة على استخدام المنصة.</p>
+                    
+                    <h2>5. التغييرات</h2>
+                    <p>يحتفظ المطور بحق تعديل محتوى المنصة أو إزالة أي محتوى في أي وقت دون إشعار مسبق.</p>
+                    
+                    <h2>6. الاستخدام الشخصي</h2>
+                    <p>هذه المنصة مُصمّمة للاستخدام الشخصي والترفيهي فقط. أي استخدام تجاري أو توزيعي للمحتوى يقع تحت مسؤولية المستخدم بالكامل.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== عن المنصة ===== -->
+        <section id="page-about" class="page">
+            <div class="about-container">
+                <div class="about-hero">
+                    <img src="Logo.png" alt="My Cinema" class="about-logo">
+                    <h1>عن My Cinema</h1>
+                    <p>منصة سينمائية متكاملة تهدف لتقديم تجربة مشاهدة استثنائية مجاناً</p>
+                </div>
+                
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="about-icon"><i class="fas fa-bullseye"></i></div>
+                        <h3>رؤيتنا</h3>
+                        <p>أن نكون الوجهة الأولى لمحبي السينما في العالم العربي، مع تقديم تجربة مشاهدة سلسة وعالية الجودة دون أي رسوم.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon"><i class="fas fa-rocket"></i></div>
+                        <h3>مهمتنا</h3>
+                        <p>توفير منصة سهلة الاستخدام تحتوي على مجموعة متنوعة من الأفلام بتصنيفات مختلفة تناسب جميع الأذواق.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon"><i class="fas fa-heart"></i></div>
+                        <h3>قيمنا</h3>
+                        <p>الابتكار، البساطة، الاحترافية، واحترام خصوصية المستخدم هي القيم التي نؤسس عليها كل ما نقدمه.</p>
+                    </div>
+                </div>
+
+                <div class="about-developer">
+                    <h2>المطور</h2>
+                    <div class="dev-profile">
+                        <img src="Me.jpg" alt="Yousef M.Rashad" class="dev-photo">
+                        <div class="dev-info">
+                            <h3>Yousef M.Rashad</h3>
+                            <p>مطور ويب شغوف بالتكنولوجيا والسينما. طوّر هذه المنصة بهدف توفير تجربة سينمائية مميزة ومجانية للجميع. يعمل على تحسين المنصة وتطويرها بشكل مستمر.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-features">
+                    <h2>مميزات المنصة</h2>
+                    <div class="features-list">
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> واجهة عربية بالكامل وسهلة الاستخدام</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> مشغل فيديو مدمج بتحكم كامل</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> تصنيف الأفلام حسب النوع</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> بحث سريع في الأفلام</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> نظام تسجيل دخول آمن</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> تصميم متجاوب مع جميع الأجهزة</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> احترام تام لخصوصية المستخدم</div>
+                        <div class="feature-item"><i class="fas fa-check-circle"></i> تحديثات مستمرة وتحسينات</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== اتصل بنا ===== -->
+        <section id="page-contact" class="page">
+            <div class="contact-container">
+                <div class="contact-info-section">
+                    <h1>اتصل بنا</h1>
+                    <p>نسعد بتواصلكم معنا. أرسلوا لنا استفساراتكم أو ملاحظاتكم وسنرد عليكم في أقرب وقت.</p>
+                    
+                    <div class="contact-cards">
+                        <div class="contact-card">
+                            <i class="fas fa-envelope"></i>
+                            <h3>البريد الإلكتروني</h3>
+                            <p>yousef@mycinema.com</p>
+                        </div>
+                        <div class="contact-card">
+                            <i class="fas fa-user"></i>
+                            <h3>المطور</h3>
+                            <p>Yousef M.Rashad</p>
+                        </div>
+                        <div class="contact-card">
+                            <i class="fas fa-globe"></i>
+                            <h3>المنصة</h3>
+                            <p>My Cinema</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form-section">
+                    <form id="contactForm" onsubmit="App.handleContact(event)">
+                        <div class="form-group">
+                            <label for="contactName"><i class="fas fa-user"></i> اسمك</label>
+                            <input type="text" id="contactName" required placeholder="أدخل اسمك">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail"><i class="fas fa-envelope"></i> بريدك الإلكتروني</label>
+                            <input type="email" id="contactEmail" required placeholder="example@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactSubject"><i class="fas fa-tag"></i> الموضوع</label>
+                            <input type="text" id="contactSubject" required placeholder="موضوع الرسالة">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage"><i class="fas fa-comment-alt"></i> الرسالة</label>
+                            <textarea id="contactMessage" rows="5" required placeholder="اكتب رسالتك هنا..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-gold btn-block">
+                            <i class="fas fa-paper-plane"></i> إرسال الرسالة
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- الفوتر -->
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <img src="Logo.png" alt="Logo" class="footer-logo">
+                        <span>My Cinema</span>
+                    </div>
+                    <p>منصة سينمائية متكاملة تقدم تجربة مشاهدة استثنائية مجاناً. استمتع بأفضل الأفلام بجودة عالية.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <a onclick="App.navigate('home')">الرئيسية</a>
+                    <a onclick="App.navigate('about')">عن المنصة</a>
+                    <a onclick="App.navigate('contact')">اتصل بنا</a>
+                </div>
+                <div class="footer-col">
+                    <h4>قانوني</h4>
+                    <a onclick="App.navigate('privacy')">سياسة الخصوصية</a>
+                    <a onclick="App.navigate('terms')">شروط الاستخدام</a>
+                    <a onclick="App.navigate('disclaimer')">إخلاء المسؤولية</a>
+                </div>
+                <div class="footer-col">
+                    <h4>تواصل معنا</h4>
+                    <p><i class="fas fa-envelope"></i> yousef@mycinema.com</p>
+                    <p><i class="fas fa-user"></i> Yousef M.Rashad</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>جميع الحقوق محفوظة &copy; 2025 My Cinema — تطوير Yousef M.Rashad</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- حاوية الإشعارات -->
+    <div id="toastContainer"></div>
+
+    <!-- نافذة التأكيد -->
+    <div id="confirmModal" class="modal-overlay" style="display:none">
+        <div class="modal-card">
+            <h3 id="confirmTitle">تأكيد</h3>
+            <p id="confirmMessage">هل أنت متأكد؟</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmYes">نعم</button>
+                <button class="btn btn-outline" id="confirmNo">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
+    <script></script>
+</body>
+</html>
