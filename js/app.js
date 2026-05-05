@@ -1,3 +1,4 @@
+
 /* ================================================
    My Cinema — التطبيق الرئيسي
    المطور: Yousef M.Rashad
@@ -195,20 +196,52 @@ const App = {
         this.renderMovies();
     },
 
-    // ===== تشغيل فيلم =====
+        // ===== تشغيل فيلم =====
     playMovie(id) {
         const movie = this.movies.find(m => m.id === id);
         if (!movie) return;
 
-        document.getElementById('videoSource').src = movie.file;
-        document.getElementById('videoPlayer').load();
+        const video = document.getElementById('videoPlayer');
+
+        // إعادة تعيين المشغل
+        video.removeAttribute('src');
+        document.getElementById('videoSource').removeAttribute('src');
+
+        // التحقق إذا كان الرابط خارجي (درايف أو أي سيرفر)
+        if (movie.file.startsWith('http')) {
+            video.src = movie.file;
+        } else {
+            // ملف محلي في المشروع
+            const source = document.getElementById('videoSource');
+            source.src = movie.file;
+            source.type = this.getFileType(movie.file);
+        }
+
+        video.load();
         document.getElementById('playerTitle').textContent = movie.title;
-        document.getElementById('playerYear').innerHTML = `<i class="fas fa-calendar"></i> ${movie.year || 'غير محدد'}`;
-        document.getElementById('playerDuration').innerHTML = `<i class="fas fa-clock"></i> ${movie.duration || 'غير محدد'}`;
-        document.getElementById('playerCategory').innerHTML = `<i class="fas fa-tag"></i> ${movie.category || 'غير محدد'}`;
+        document.getElementById('playerYear').innerHTML = '<i class="fas fa-calendar"></i> ' + (movie.year || 'غير محدد');
+        document.getElementById('playerDuration').innerHTML = '<i class="fas fa-clock"></i> ' + (movie.duration || 'غير محدد');
+        document.getElementById('playerCategory').innerHTML = '<i class="fas fa-tag"></i> ' + (movie.category || 'غير محدد');
         document.getElementById('playerDesc').textContent = movie.description || 'لا يوجد وصف متاح لهذا الفيلم.';
 
         this.navigate('player');
+
+        // محاولة تشغيل تلقائي (قد يُمنع من المتصفح)
+        video.play().catch(() => {
+            // المتصفح يمنع التشغيل التلقائي، المستخدم سيضغط زر Play
+        });
+    },
+
+    // ===== تحديد نوع الملف =====
+    getFileType(fileUrl) {
+        const ext = fileUrl.split('.').pop().toLowerCase().split('?')[0];
+        const types = {
+            'mp4': 'video/mp4',
+            'webm': 'video/webm',
+            'ogg': 'video/ogg',
+            'mkv': 'video/mp4' // المتصفحات تتعامل مع mkv كـ mp4
+        };
+        return types[ext] || 'video/mp4';
     },
 
     // ===== التنقل بين الصفحات =====
