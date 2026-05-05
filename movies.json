@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "title": "فيلم الرعب المظلم",
+    "file": "movies/horror_movie.mp4",
+    "poster": "movies/posters/horror.jpg",
+    "category": "رعب",
+    "year": 2024,
+    "duration": "1:52",
+    "description": "قصة مرعبة تدور في قصر مهجور..."
+  },
+  {
+    "id": 2,
+    "title": "مغامرة الفضاء",
+    "file": "movies/space_adventure.mp4",
+    "poster": "movies/posters/space.jpg",
+    "category": "مغامرة",
+    "year": 2023,
+    "duration": "2:15",
+    "description": "رحلة عبر المجرات لاكتشاف كوكب جديد..."
+  }
+]
